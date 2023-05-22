@@ -3,6 +3,7 @@ package com.example.tiptime
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -52,8 +53,13 @@ class MainActivity : ComponentActivity() {
 fun TipTimeLayout() {
 
     var amountInput by remember { mutableStateOf("") }
-    var amount = amountInput.toDoubleOrNull() ?: 0.0
-    val tip = calculateTip(amount)
+    val amount = amountInput.toDoubleOrNull() ?: 0.0
+    var tipInput by remember {
+        mutableStateOf("")
+    }
+    val tipPercent = tipInput.toDoubleOrNull() ?: 0.0
+    val tip = calculateTip(amount= amount, tipPercent = tipPercent)
+
     Column(
         modifier = Modifier.padding(40.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -65,9 +71,23 @@ fun TipTimeLayout() {
                 .padding(bottom = 16.dp)
                 .align(alignment = Alignment.Start)
         )
-        EditNumberField( modifier = Modifier
-            .padding(bottom = 32.dp)
-            .fillMaxWidth(),value = amountInput,onValueChange = { amountInput = it })
+        EditNumberField(
+            label = R.string.bill_amount,
+            modifier = Modifier
+                .padding(bottom = 32.dp)
+                .fillMaxWidth()
+            ,value = amountInput,
+            onValueChange = { amountInput = it })
+
+        EditNumberField(
+            label = R.string.how_was_the_service,
+            value = tipInput,
+            onValueChange = {tipInput = it },
+            modifier = Modifier
+                .padding(bottom = 32.dp)
+                .fillMaxWidth()
+        )
+
         Text(
             text = stringResource(R.string.tip_amount, tip),
             style = MaterialTheme.typography.displaySmall
@@ -78,13 +98,14 @@ fun TipTimeLayout() {
 
 
 @Composable
-fun EditNumberField(value : String,modifier: Modifier = Modifier, onValueChange: (String)-> Unit){
+fun EditNumberField(@StringRes label : Int, value : String, modifier: Modifier = Modifier, onValueChange: (String)-> Unit){
 
     TextField(
+        
         value = value,
         onValueChange =onValueChange,
         modifier = modifier ,
-        label = { Text(text = stringResource(id = R.string.bill_amount))},
+        label = { Text(text = stringResource(id = label))},
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
 
